@@ -24,9 +24,4 @@
   - @topics.each do |topic|
     = render partial: 'shouts/topic_row', locals: { topic: topic }
 
-#config
-  %span.session-id= @room.session_id
-  %span.token= @token
-  %span.position= @position
-  %span.room_id= @room.id
-  %span.observer_id= @observer.id if @position == 'observe'
+

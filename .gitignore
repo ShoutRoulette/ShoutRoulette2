@@ -12,3 +12,4 @@
 .powder
 config/database.yml
 config/initializers/opentok-keys.rb
+Gemfile

@@ -2,29 +2,23 @@ class RoomsController < ApplicationController
 
   def show
 
-    session['shouting'] ||= 0
-
-    if session['shouting'] > 0 and params[:position] != 'observe'
-      redirect_to root_path, notice: "don't spread yourself too thin! one shout at a time" and return
-    else
-      if params[:position] != 'observe'
-        session['shouting'] += 1
-      end
-    end
-
     @topics = Topic.top_popular
     @topic = Topic.find(params[:id])
-    @room = Room.create_or_join(@topic, params, request)
-    @position = params[:position]
-
-    if params[:position] == 'observe'
-      redirect_to '/' and return if @room.nil?
-      @token = Room.subscriber_token @room.session_id
-      @observer = @room.add_observer
-    else
-      @token = Room.publisher_token(@room.session_id)
+    pos = 0
+    #to prevent sql injection, define position
+    if params[:position].to_s == 'agree'
+      pos = 1
+    elsif params[:position].to_s == 'disagree'
+      pos = 2
+    elsif params[:position].to_s == 'observe'
+      pos = 3
     end
+    Session.reset_session(request, @topic.id, pos)
+  end
 
+  def find_room
+    user = Session.check_session(request)
+    render :json => user
   end
 
   def close
