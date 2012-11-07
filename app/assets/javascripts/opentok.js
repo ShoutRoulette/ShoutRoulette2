@@ -79,7 +79,6 @@
         }
         sessionConnectedHandler = function(event) {
           var publisher;
-          subscribeToStreams(event.streams);
           $('.spinner').remove();
           if (position !== 'observe') {
             $('#video1').append("<div id='" + position + "'></div>");
@@ -89,6 +88,7 @@
             });
             return session.publish(publisher);
           }
+          subscribeToStreams(event.streams);
         };
         streamCreatedHandler = function(e) {
           clearTimeout(idle_timer);
@@ -97,10 +97,13 @@
         };
         appended_one = false;
         subscribeToStreams = function(streams) {
+          console.log('subscribe');
           var num, stream, _i, _len, _results;
           _results = [];
           for (_i = 0, _len = streams.length; _i < _len; _i++) {
+            console.log('subscribe'+_i);
             stream = streams[_i];
+            console.log(stream);
             if (stream.connection.connectionId !== session.connection.connectionId) {
               if (position === 'observe') {
                 num = !appended_one ? 1 : 2;
@@ -131,16 +134,8 @@
           }
         };
         streamDestroyedHandler = function(e) {
-          $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: "/next",
-            success: function(data) {
-              console.log(data);
-            }
-          });
           alert('user disconect, finding new');
-          interval = setInterval("get_room()", 5000);
+          document.location.reload(true);
         };
         TB.addEventListener("exception", exceptionHandler);
         session = TB.initSession(sessionId);
