@@ -13,6 +13,7 @@ ShoutrouletteV2::Application.routes.draw do
   delete 'topic/:id/remove' => "admin#remove_topic", as: 'remove_topic'
   post 'close' => "rooms#close"
   post 'find' => "rooms#find_room"
+  post 'next' => "rooms#next_op"
   post 'topics/new' => "topics#new", as: 'new_topic'
 
 end

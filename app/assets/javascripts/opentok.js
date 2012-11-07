@@ -1,8 +1,40 @@
-(function() {
+      var sessionId = '';
+      var token = '';
+      var position = '';
+      var interval = 0;
+      var tries = 0;
 
-  $(function() {
-    var connect_to_room, fixUnload, get_room, opts, prompt_social, run_find_room, spinner, target, unload;
+
+      function get_room() {
+        if (tries < 20)
+        {
+          $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: "/find",
+            success: function(data) {
+              console.log(data);
+              if (data.matched == true)
+              {
+                clearInterval(interval);
+                token = data.user_token;
+                sessionId = data.room_session;
+                connect_to_room();
+                tries = 0;
+              } else {
+                 tries++;
+              }
+            }
+          });
+        } else {
+          clearInterval(interval);
+          alert('too many tries, not match, try another topic? [insert redirect script to home]');
+        }
+      }
+
+      interval = setInterval("get_room()", 5000);
     if ($('#session').length) {
+      
       mixpanel.track("" + ($('.topic').text()));
       $('#video1').css({
         background: "url(/ragefaces/rage" + (Math.round(Math.random() * 5) + 1) + ".jpg)"
@@ -26,29 +58,15 @@
       };
       target = document.getElementById('video1');
 
-      function get_room(){
-        $.ajax({
-          type: 'POST',
-          dataType: 'json',
-          url: "/find",
-          success: function(data) {
-            console.log(data);
-          }
-        });
-      };
 
-      run_find_room = setTimeout(get_room(), 5000);
+    }
 
       prompt_social = setTimeout((function() {
         return $('.social').fadeIn();
       }), 10000);
-
-      connect_to_room = function() {
-        var VIDEO_HEIGHT, VIDEO_WIDTH, apiKey, appended_one, exceptionHandler, idle_timer, position, session, sessionConnectedHandler, sessionId, streamCreatedHandler, subscribeToStreams, token;
+    function connect_to_room() {
         apiKey = 20193772;
-        sessionId = $('.session-id').text();
-        token = $('.token').text();
-        position = $('.position').text();
+        position = $('#position').html();
         VIDEO_WIDTH = 466;
         VIDEO_HEIGHT = 378;
         if (position !== 'observe') {
@@ -112,13 +130,23 @@
             return console.log("This page is trying to connect a third client to an OpenTok peer-to-peer session. Only two clients can connect to peer-to-peer sessions.");
           }
         };
+        streamDestroyedHandler = function(e) {
+          $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: "/next",
+            success: function(data) {
+              console.log(data);
+            }
+          });
+          alert('user disconect, finding new');
+          interval = setInterval("get_room()", 5000);
+        };
         TB.addEventListener("exception", exceptionHandler);
         session = TB.initSession(sessionId);
         session.addEventListener("sessionConnected", sessionConnectedHandler);
         session.addEventListener("streamCreated", streamCreatedHandler);
+        session.addEventListener("streamDestroyed", streamDestroyedHandler);
         return session.connect(apiKey, token);
-      };
-    }
-  });
+      }
 
-}).call(this);

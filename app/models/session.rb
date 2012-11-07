@@ -10,15 +10,20 @@ class Session < ActiveRecord::Base
 	  		#user matched, generate token, go to room
 	  		user.user_token = Session.publisher_token(user.room_session)
 	  	else
+        user.room_session = ''
 	  		#find oponent
 	  		find_pos = (user.position == 1) ? 2 : 1
-        logger.info "ppppooooosssss"+find_pos.to_s
 	  		#change order by rand to limit (rand numer), 1 in future
-	  		op = Session.where("matched = false and topic_id = '#{user.topic_id}' and position = '#{find_pos}' and DATE(updated_at) >=  (DATE('#{Time.now}') - INTERVAL '7 SECONDS')").order("random()").first
+	  		op = Session.where("matched = false and topic_id = '#{user.topic_id}' and position = '#{find_pos}' and DATE(updated_at) >=  (DATE('#{Time.now}') - INTERVAL '30 SECONDS')").order("random()").first
 	  		if !op.nil?
-	  			sess = OTSDK.createSession.to_s
-	  			op.room_session = sess
-	  			op.matched = true
+          if op.room_session.blank?
+	  			  sess = OTSDK.createSession.to_s
+	  			  op.room_session = sess
+            user.room_session = sess
+          else
+	  			  user.room_session = op.room_session
+          end
+          op.matched = true
 	  			op.save
 	  			user.room_session = sess
 	  			user.user_token = Session.publisher_token(user.room_session)
@@ -27,8 +32,15 @@ class Session < ActiveRecord::Base
 	  	end
       user.last_update = Time.now
 	  	user.save
-	end
-	user
+    end
+    user
+  end
+
+  def self.next_op(request)
+    user = Session.find_by_user_session(request.session_options[:id])
+    user.matched = false
+    user.last_update = Time.now
+    user.save
   end
 
   def self.reset_session(request, topic_id, position)
