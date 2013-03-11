@@ -6,7 +6,7 @@ ShoutrouletteV2::Application.routes.draw do
   get 'room/:id/:position' => "rooms#show", as: 'show_room'
 
   scope 'pages', controller: 'pages' do
-    get :about, :get_angry
+    get :about, :get_angry, :press
   end
 
   get 'bunnies' => "admin#index", as: 'admin'
