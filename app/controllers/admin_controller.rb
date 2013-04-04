@@ -4,10 +4,7 @@ class AdminController < ApplicationController
   def index
     @topics = Topic.all.reverse 
     @rooms = Room.all.reverse
-    @sessions = Session.find(:all, :include => :topic, :order => "updated_at DESC")#.includes(:topic).order.all
-    #logger.debug @sessions.inspect
-    #logger.debug @sessions.class
-    #logger.debug "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+    @sessions = Session.find(:all, :include => :topic, :order => "updated_at DESC")
   end
 
   def remove_topic
@@ -35,7 +32,6 @@ class AdminController < ApplicationController
 
   def remove_all_old_sessions
 	Session.destroy_all(['updated_at < ?', 10.minutes.ago])
-	logger.debug "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
   	redirect_to admin_path
   end
 
