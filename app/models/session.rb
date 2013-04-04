@@ -1,3 +1,20 @@
+# == Schema Information
+#
+# Table name: sessions
+#
+#  id           :integer          not null, primary key
+#  topic_id     :integer
+#  user_ip      :string(255)
+#  user_session :string(255)
+#  user_token   :text
+#  room_session :text
+#  position     :integer
+#  matched      :boolean
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  last_update  :datetime
+#
+
 class Session < ActiveRecord::Base
   belongs_to :topic
   attr_accessible :user_ip, :user_session, :user_token, :room_session, :position, :matched

@@ -3,7 +3,41 @@
 
 #static-content
   %table
-    - @topics.each do |topic|
+    %tr
+      %th= "Room"
+      %th= "Users"
+    - @rooms.each do |room|
       %tr
-        %td= topic.title
-        %td= link_to 'delete', remove_topic_path(topic), method: 'delete', confirm: 'you sure?'
+        %td= room.id
+        %td= link_to 'delete', remove_room_path(topic), method: 'delete', confirm: 'you sure?'
+  /%h1 Sessions
+  %table
+    %tr
+      %th Session Topic
+      %th Matched
+      %th Position: 1 agree, 2 dis, 3 obs
+      %th User IP
+      %th last update
+      %th= link_to 'delete all', remove_all_sessions_path, method: 'delete', confirm: 'you sure?'
+      %th= link_to 'delete old (10min)', remove_all_old_sessions_path, method: 'delete', confirm: 'you sure?'
+
+    - @sessions.each do |session|
+      %tr
+        %td= session.topic.title
+        %td{:class => ("matched" unless session.matched == false)}= session.matched 
+        %td= session.position
+        %td= session.user_ip
+        %td= time_ago_in_words(session.updated_at).to_s + " ago"
+        %td= link_to 'delete', remove_session_path(session), method: 'delete', confirm: 'you sure?'
+  %table
+    %tr
+      %th Topic (click to delete)
+      %th Number of rooms
+      /%th agree
+      /%th disagree
+      /%th observe    
+    - @topics.each do |topic|  
+      %tr
+        %td=  link_to "#{topic.title}", remove_topic_path(topic), method: 'delete', confirm: 'you sure?'
+        %td= topic.rooms.count
+        /%td topic

@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: rooms
+#
+#  id         :integer          not null, primary key
+#  session_id :string(255)
+#  topic_id   :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  agree      :boolean
+#  disagree   :boolean
+#
+
 class Room < ActiveRecord::Base
   belongs_to :topic
   has_many :observers

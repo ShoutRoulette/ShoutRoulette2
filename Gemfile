@@ -5,6 +5,7 @@ gem 'opentok'
 gem 'haml'
 gem 'jquery-rails'
 gem 'roots-rails'
+gem 'annotate'
 
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
