@@ -4,7 +4,7 @@ class AdminController < ApplicationController
   def index
     @topics = Topic.all.reverse 
     @rooms = Room.all.reverse
-    @sessions = Session.includes(:topic).all
+    @sessions = Session.find(:all, :include => :topic, :order => "updated_at DESC")#.includes(:topic).order.all
     #logger.debug @sessions.inspect
     #logger.debug @sessions.class
     #logger.debug "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
